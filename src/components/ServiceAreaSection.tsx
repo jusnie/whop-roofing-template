@@ -135,7 +135,7 @@ export function ServiceAreaSection({
             <div className="rounded-[12px] border border-[var(--border-hairline)] bg-[var(--surface-page)] p-5">
               <svg
                 viewBox="0 0 360 200"
-                className="w-full h-auto"
+                className="w-full h-auto font-sans"
                 role="img"
                 aria-label="65-mile dispatch radius centered on Austin, Texas"
               >
@@ -176,7 +176,7 @@ export function ServiceAreaSection({
                 <text x="190" y="101" fill="#1f1b16" fontSize="11" fontWeight="500">
                   Austin yard
                 </text>
-                <text x="270" y="188" fill="#72695e" fontSize="10" fontFamily="monospace">
+                <text x="270" y="188" fill="#72695e" fontSize="10" style={{ fontFamily: "var(--font-mono)" }}>
                   65 mi
                 </text>
               </svg>

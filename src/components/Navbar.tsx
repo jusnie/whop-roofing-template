@@ -74,7 +74,7 @@ export function Navbar({
         </a>
 
         {/* Primary navigation */}
-        <nav className="hidden lg:flex items-center gap-6" aria-label="Primary">
+        <nav className="hidden lg:flex items-center gap-5 xl:gap-6" aria-label="Primary">
           {NAV_LINKS.map((item) => {
             const isActive = currentRoute === item.route;
             return (
@@ -83,7 +83,7 @@ export function Navbar({
                 href={item.route}
                 aria-current={isActive ? "page" : undefined}
                 onClick={(e) => handleNav(e, item.route)}
-                className={`inline-flex items-center gap-2 text-[14px] leading-5 transition-colors duration-150 ease-[var(--ease-out)] cursor-pointer ${
+                className={`inline-flex items-center gap-2 whitespace-nowrap text-[14px] leading-5 transition-colors duration-150 ease-[var(--ease-out)] cursor-pointer ${
                   isActive
                     ? "font-medium text-[var(--brand-primary)]"
                     : "font-normal text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
@@ -101,39 +101,40 @@ export function Navbar({
           })}
         </nav>
 
-        {/* Quiet text action + single primary button */}
-        <div className="hidden sm:flex items-center gap-5">
+        {/* Quiet text action + primary button + responsive menu toggle */}
+        <div className="flex items-center gap-3 sm:gap-5">
           <button
             type="button"
             onClick={() => onOpenCheckout("inspection")}
-            className="text-[14px] leading-5 font-normal text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors duration-150 ease-[var(--ease-out)] cursor-pointer tabular-nums"
+            className="hidden sm:inline-flex items-center whitespace-nowrap text-[14px] leading-5 font-normal text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors duration-150 ease-[var(--ease-out)] cursor-pointer tabular-nums"
           >
-            Inspection · <span className="font-mono">{formatUsd(inspectionPlan.price)}</span>
+            Inspection ·&nbsp;<span className="font-mono">{formatUsd(inspectionPlan.price)}</span>
           </button>
           <a
             href="/estimate"
             onClick={(e) => handleNav(e, "/estimate")}
-            className="inline-flex h-9 items-center justify-center rounded-[8px] bg-[var(--text-primary)] px-4 text-[14px] leading-5 font-medium text-[#fdfbf7] hover:bg-[#332d25] active:scale-[0.98] ui-transition cursor-pointer"
+            className="hidden sm:inline-flex h-9 items-center justify-center whitespace-nowrap rounded-[8px] bg-[var(--text-primary)] px-4 text-[14px] leading-5 font-medium text-[#fdfbf7] hover:bg-[#332d25] active:scale-[0.98] ui-transition cursor-pointer"
           >
             Request estimate
           </a>
-        </div>
 
-        {/* Mobile menu button */}
-        <button
-          type="button"
-          onClick={() => setMobileOpen((prev) => !prev)}
-          className="inline-flex sm:hidden h-9 w-9 items-center justify-center rounded-[8px] border border-[var(--border-control)] bg-[var(--surface-card)] text-[var(--text-primary)] transition-colors duration-150 ease-[var(--ease-out)]"
-          aria-expanded={mobileOpen}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X size={18} strokeWidth={1.5} /> : <Menu size={18} strokeWidth={1.5} />}
-        </button>
+          {/* Mobile & tablet menu button (shown whenever full lg nav is hidden) */}
+          <button
+            type="button"
+            onClick={() => setMobileOpen((prev) => !prev)}
+            className="inline-flex lg:hidden h-9 items-center justify-center gap-2 rounded-[8px] border border-[var(--border-control)] bg-[var(--surface-card)] px-2.5 text-[13px] font-medium text-[var(--text-primary)] transition-colors duration-150 ease-[var(--ease-out)] cursor-pointer"
+            aria-expanded={mobileOpen}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X size={18} strokeWidth={1.5} /> : <Menu size={18} strokeWidth={1.5} />}
+            <span className="hidden sm:inline">Menu</span>
+          </button>
+        </div>
       </div>
 
-      {/* Mobile navigation sheet */}
+      {/* Mobile & tablet navigation sheet */}
       {mobileOpen && (
-        <div className="sm:hidden border-t border-[var(--border-hairline)] bg-[var(--surface-page)] px-6 py-4 space-y-4">
+        <div className="lg:hidden border-t border-[var(--border-hairline)] bg-[var(--surface-page)] px-6 py-4 space-y-4">
           <nav className="flex flex-col gap-1" aria-label="Mobile">
             <a
               href="/"
@@ -172,7 +173,7 @@ export function Navbar({
             })}
           </nav>
 
-          <div className="flex flex-col gap-2 pt-3 border-t border-[var(--border-hairline)]">
+          <div className="flex flex-col gap-2 pt-3 border-t border-[var(--border-hairline)] sm:hidden">
             <a
               href="/estimate"
               onClick={(e) => handleNav(e, "/estimate")}
@@ -190,13 +191,13 @@ export function Navbar({
             >
               Book inspection · {formatUsd(inspectionPlan.price)}
             </button>
-            <a
-              href={COMPANY_CONFIG.contact.phoneHref}
-              className="flex h-9 items-center justify-center font-mono text-[13px] text-[var(--text-secondary)] tabular-nums"
-            >
-              {COMPANY_CONFIG.contact.phone} · {COMPANY_CONFIG.contact.licenseNumber}
-            </a>
           </div>
+          <a
+            href={COMPANY_CONFIG.contact.phoneHref}
+            className="flex h-9 items-center justify-center font-mono text-[13px] text-[var(--text-secondary)] tabular-nums sm:pt-2 sm:border-t sm:border-[var(--border-hairline)]"
+          >
+            {COMPANY_CONFIG.contact.phone} · {COMPANY_CONFIG.contact.licenseNumber}
+          </a>
         </div>
       )}
     </header>

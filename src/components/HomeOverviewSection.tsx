@@ -93,7 +93,11 @@ export function HomeOverviewSection({
                     </p>
                   </div>
 
-                  <div className="mt-6 pt-4 border-t border-current/10 flex items-center justify-between gap-3">
+                  <div
+                    className={`mt-6 pt-4 border-t flex items-center justify-between gap-3 ${
+                      isDeposit ? "border-[var(--dark-hairline)]" : "border-[var(--border-hairline)]"
+                    }`}
+                  >
                     <button
                       type="button"
                       onClick={() => onOpenCheckout(plan.key)}
