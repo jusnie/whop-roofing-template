@@ -3,6 +3,12 @@
 @import "@fontsource/instrument-serif/400.css";
 @import "@fontsource-variable/jetbrains-mono";
 
+@theme {
+  --font-sans: "Instrument Sans Variable", "Instrument Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
 @layer base {
   :root {
     /* Warm limestone & timber neutral ramp (light) */
@@ -39,7 +45,7 @@
     /* Single easing curve across the interface */
     --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
-    font-family: "Instrument Sans Variable", "Instrument Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-family: var(--font-sans);
     color: var(--text-primary);
     background-color: var(--surface-page);
   }
@@ -48,26 +54,34 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    font-family: var(--font-sans);
   }
 
   body {
     background-color: var(--surface-page);
     color: var(--text-primary);
+    font-family: var(--font-sans);
     font-size: 15px;
     line-height: 22px;
     font-weight: 400;
   }
 
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
+
   code,
-  pre,
-  .font-mono {
-    font-family: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  pre {
+    font-family: var(--font-mono);
   }
 }
 
 /* Editorial display face — large headlines only, weight 400, never italic */
 .font-display {
-  font-family: "Instrument Serif", Georgia, serif;
+  font-family: var(--font-serif);
   font-weight: 400;
   font-style: normal;
   letter-spacing: -0.02em;
