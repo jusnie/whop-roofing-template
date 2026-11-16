@@ -14,6 +14,7 @@ export interface RouteMeta {
   label: string;
   title: string;
   eyebrow: string;
+  ctaLabel: string;
   description: string;
 }
 
@@ -23,55 +24,63 @@ export const SITE_ROUTES: RouteMeta[] = [
     label: "Home",
     title: "Home",
     eyebrow: "Overview",
+    ctaLabel: "Go home",
     description: "Residential and light commercial roofing across Central Texas, hosted and billed on Whop.",
   },
   {
     route: "/services",
     label: "Services",
     title: "Roofing Services",
-    eyebrow: "01 · Scope & warranties",
+    eyebrow: "Scope & warranties",
+    ctaLabel: "View services",
     description: "21-point drone inspections, storm & flashing repairs, and Class 4 roof replacements.",
   },
   {
     route: "/pricing",
     label: "Pricing",
     title: "Online Plans & Deposits",
-    eyebrow: "02 · Whop checkout",
+    eyebrow: "Transparent pricing",
+    ctaLabel: "Compare plans",
     description: "Fixed-fee inspection, $500 project deposit with card-on-file, and flat-rate roof tune-up.",
   },
   {
     route: "/financing",
     label: "Financing",
     title: "Monthly Financing",
-    eyebrow: "03 · Payment estimator",
+    eyebrow: "Payment estimator",
+    ctaLabel: "Estimate payments",
     description: "Calculate monthly payments across Klarna, Splitit, and Afterpay after deposit credits.",
   },
   {
     route: "/invoice",
     label: "Final invoice",
     title: "Final Balance Invoice",
-    eyebrow: "04 · Whop Invoices API",
+    eyebrow: "Project closeout",
+    ctaLabel: "View billing flow",
     description: "Auto-charge a vaulted card on file or email a hosted invoice link after final walkthrough.",
   },
   {
     route: "/service-area",
     label: "Service area",
     title: "Service Area & ZIP Check",
-    eyebrow: "05 · Central Texas dispatch",
+    eyebrow: "Central Texas dispatch",
+    ctaLabel: "Check your ZIP",
     description: "Check 65-mile dispatch coverage by ZIP code and county arrival windows.",
   },
   {
     route: "/reviews",
     label: "Reviews",
     title: "Reviews & Credentials",
-    eyebrow: "06 · Certifications",
+    eyebrow: "Certifications",
+    ctaLabel: "Read reviews",
     description: "Manufacturer certifications, licensing details, and completed homeowner projects.",
   },
   {
     route: "/estimate",
     label: "Estimate",
     title: "Request an Estimate",
-    eyebrow: "07 · Whop Leads API",
+    eyebrow: "Written scope",
+    ctaLabel: "Request a quote",
     description: "Submit roof material, urgency, and insurance details for a written quote and FAQ answers.",
   },
 ];

@@ -564,7 +564,7 @@ export function WhopCheckoutModal({
       aria-modal="true"
       aria-labelledby="whop-checkout-title"
     >
-      <div className="relative my-auto w-full max-w-[920px] rounded-[16px] border border-[var(--border-hairline)] bg-[var(--surface-card)] shadow-float overflow-hidden">
+      <div className="modal-enter relative my-auto w-full max-w-[920px] rounded-[16px] border border-[var(--border-hairline)] bg-[var(--surface-card)] shadow-float overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-hairline)]">
           <div className="flex items-baseline gap-3">

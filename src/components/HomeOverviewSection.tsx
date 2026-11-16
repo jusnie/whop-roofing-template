@@ -117,14 +117,14 @@ export function HomeOverviewSection({
           </div>
         </div>
 
-        {/* Dedicated Pages Directory */}
+        {/* Services & Project Planning Directory */}
         <div className="pt-12 border-t border-[var(--border-hairline)]">
           <div className="max-w-[580px]">
             <p className="font-mono text-[12px] leading-4 text-[var(--text-muted)]">
-              Explore dedicated pages
+              Plan your project
             </p>
             <h2 className="mt-2 font-display text-[32px] sm:text-[38px] leading-[1.08] text-[var(--text-primary)]">
-              Every step of the project in its own section
+              Services, financing, coverage, and billing
             </h2>
           </div>
 
@@ -159,7 +159,7 @@ export function HomeOverviewSection({
                 </div>
 
                 <p className="mt-5 font-mono text-[12px] text-[var(--brand-primary)]">
-                  Open {item.route}
+                  {item.ctaLabel}
                 </p>
               </a>
             ))}

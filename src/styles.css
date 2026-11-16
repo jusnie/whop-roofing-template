@@ -17,6 +17,7 @@
     --surface-raised: #efe9df;
     --border-hairline: rgba(31, 27, 22, 0.08);
     --border-control: rgba(31, 27, 22, 0.14);
+    --border-strong: rgba(31, 27, 22, 0.24);
     --text-primary: #1f1b16;
     --text-secondary: #5e554a;
     --text-muted: #72695e;
@@ -153,11 +154,27 @@
   animation: hero-enter 420ms var(--ease-out) both;
 }
 
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-enter {
+  animation: modal-enter 180ms var(--ease-out) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
-  .hero-enter {
+  .hero-enter,
+  .modal-enter {
     animation: none;
   }
   .ui-transition {

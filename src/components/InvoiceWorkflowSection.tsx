@@ -224,7 +224,7 @@ export function InvoiceWorkflowSection({
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
           <div className="max-w-[640px]">
             <p className="font-mono text-[12px] leading-4 text-[var(--text-muted)]">
-              04 · Deposit to final invoice workflow
+              Deposit to final invoice workflow
             </p>
             <h2 className="mt-3 font-display text-[36px] sm:text-[44px] leading-[1.08] text-[var(--text-primary)]">
               Vault a card at deposit, bill the contract balance on completion
@@ -725,7 +725,7 @@ export function InvoiceWorkflowSection({
                     value={adminKey}
                     onChange={(e) => setAdminKey(e.target.value)}
                     placeholder="Enter office key to issue invoice"
-                    className="h-10 w-full rounded-[8px] border border-[var(--border-hairline)] bg-[var(--surface-page)] px-3 text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--border-strong)] focus:outline-none ui-transition"
+                    className="h-10 w-full rounded-[8px] border border-[var(--border-hairline)] bg-[var(--surface-page)] px-3 text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none ui-transition"
                   />
                 </label>
               )}

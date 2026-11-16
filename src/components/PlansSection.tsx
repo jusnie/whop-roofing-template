@@ -29,7 +29,7 @@ export function PlansSection({ runtime, onOpenCheckout }: PlansSectionProps) {
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
           <div className="max-w-[620px]">
             <p className="font-mono text-[12px] leading-4 text-[var(--text-muted)]">
-              02 · Online booking on Whop
+              Online booking on Whop
             </p>
             <h2 className="mt-3 font-display text-[36px] sm:text-[44px] leading-[1.08] text-[var(--text-primary)]">
               Pay a deposit now, settle the balance at walkthrough

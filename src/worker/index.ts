@@ -426,7 +426,11 @@ async function handleCheckoutPay(request: Request, runtime: ResolvedWhopRuntime)
   }
 
   const { plans } = await resolveCatalogIds(runtime);
-  const variantId = clampString(body.planId, 120) || plans[planKey];
+  const requestedPlanId = clampString(body.planId, 120);
+  if (requestedPlanId && plans[planKey] && requestedPlanId !== plans[planKey]) {
+    return errorResponse("Plan ID does not match the selected service plan.", 400);
+  }
+  const variantId = plans[planKey];
   if (!variantId.startsWith("plan_")) {
     return errorResponse(
       `Missing Whop plan ID for "${planKey}". Run \`npm run whop:provision\` and set WHOP_PLAN_${planKey.toUpperCase()}.`,
@@ -680,13 +684,16 @@ async function handleCheckoutStatus(request: Request, runtime: ResolvedWhopRunti
   const url = new URL(request.url);
   const paymentId = clampString(url.searchParams.get("payment_id"), 120);
   const setupIntentId = clampString(url.searchParams.get("setup_intent_id"), 120);
-  let memberId = clampString(url.searchParams.get("member_id"), 120);
+
+  if (!paymentId.startsWith("pay_") && !setupIntentId.startsWith("sint_")) {
+    return errorResponse("Pass a valid payment_id (pay_xxx) or setup_intent_id (sint_xxx).", 400);
+  }
 
   if (!runtime.isLiveConfigured) {
     return jsonResponse({
       mode: "preview",
       status: "succeeded",
-      memberId: memberId || previewSavedCards[0]?.memberId || null,
+      memberId: previewSavedCards[0]?.memberId || null,
       savedCard: previewSavedCards[0] ?? null,
     });
   }
@@ -694,17 +701,22 @@ async function handleCheckoutStatus(request: Request, runtime: ResolvedWhopRunti
   try {
     const client = createWhopClient(runtime);
     let status = "unknown";
+    let memberId = "";
     let paymentMethodId: string | null = null;
     let email = "";
     let name = "";
 
     if (paymentId.startsWith("pay_")) {
       const payment = (await client.payments.retrieve({ id: paymentId })) as unknown as Record<string, unknown>;
+      const paymentAccountId = typeof payment.account_id === "string" ? payment.account_id : "";
+      if (paymentAccountId && paymentAccountId !== runtime.accountId) {
+        return errorResponse("Payment does not belong to this storefront.", 403);
+      }
       status = String(payment.status ?? "unknown");
       const m = payment.member as { id?: string } | null | undefined;
       const u = payment.user as { email?: string; name?: string } | null | undefined;
       const pm = payment.payment_method as { id?: string } | null | undefined;
-      memberId = memberId || String(payment.member_id ?? m?.id ?? "");
+      memberId = String(payment.member_id ?? m?.id ?? "");
       paymentMethodId =
         (typeof payment.payment_method_id === "string" && payment.payment_method_id) ||
         pm?.id ||
@@ -713,10 +725,14 @@ async function handleCheckoutStatus(request: Request, runtime: ResolvedWhopRunti
       name = u?.name ?? "";
     } else if (setupIntentId.startsWith("sint_")) {
       const sint = (await client.setupIntents.retrieve({ id: setupIntentId })) as unknown as Record<string, unknown>;
+      const sintAccountId = typeof sint.account_id === "string" ? sint.account_id : "";
+      if (sintAccountId && sintAccountId !== runtime.accountId) {
+        return errorResponse("Setup intent does not belong to this storefront.", 403);
+      }
       status = String(sint.status ?? "unknown");
       const m = sint.member as { id?: string; user?: { email?: string; name?: string } } | null | undefined;
       const pm = sint.payment_method as { id?: string } | null | undefined;
-      memberId = memberId || String(sint.member_id ?? m?.id ?? "");
+      memberId = String(sint.member_id ?? m?.id ?? "");
       paymentMethodId =
         (typeof sint.payment_method_id === "string" && sint.payment_method_id) ||
         pm?.id ||

@@ -38,7 +38,7 @@ export function FinancingSection({ onOpenCheckout, onNavigateRoute }: FinancingS
           {/* Left narrative */}
           <div className="lg:col-span-5">
             <p className="font-mono text-[12px] leading-4 text-[var(--dark-muted)]">
-              03 · {financing.eyebrow}
+              {financing.eyebrow}
             </p>
             <h2 className="mt-3 font-display text-[36px] sm:text-[44px] leading-[1.08] text-[var(--dark-primary)]">
               {financing.headline}

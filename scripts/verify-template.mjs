@@ -263,7 +263,32 @@ assert.ok(
   payCall.body.return_url.startsWith("https://ridgeline-roofing.whop.app/"),
   "Open redirect must be blocked",
 );
-console.log("✓ API: POST /api/checkout/pay confirms ctok_, returns saved card, blocks open redirects");
+
+const tamperedPlanRes = await worker.fetch(
+  new Request("https://ridgeline-roofing.whop.app/api/checkout/pay", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      confirmationToken: "ctok_live_test_123",
+      planKey: "deposit",
+      planId: "plan_inspect149",
+      orderId: "ord_tamper",
+    }),
+  }),
+  mockEnv,
+);
+assert.equal(tamperedPlanRes.status, 400, "Client planId mismatch must be rejected");
+
+const bareMemberStatusRes = await worker.fetch(
+  new Request("https://ridgeline-roofing.whop.app/api/checkout/status?member_id=mber_sandbox_001"),
+  mockEnv,
+);
+assert.equal(
+  bareMemberStatusRes.status,
+  400,
+  "Status endpoint must require payment_id or setup_intent_id instead of trusting bare member_id",
+);
+console.log("✓ API: POST /api/checkout/pay confirms ctok_, rejects planId swaps, blocks open redirects & bare member_id IDOR");
 
 // 5c. POST /api/checkout/setup-intent
 const sintRes = await worker.fetch(
