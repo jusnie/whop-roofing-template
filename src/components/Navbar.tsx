@@ -1,39 +1,48 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { COMPANY_CONFIG, formatUsd, getPlanByKey, type PlanKey } from "../config/company.config";
+import type { AppRoute } from "../lib/routes";
 
 interface NavbarProps {
+  currentRoute: AppRoute;
   onOpenCheckout: (planKey: PlanKey) => void;
-  onNavigateSection: (sectionId: string) => void;
+  onNavigateRoute: (route: AppRoute) => void;
   hasSavedCard: boolean;
 }
 
-const NAV_LINKS = [
-  { label: "Services", id: "services" },
-  { label: "Pricing", id: "pricing" },
-  { label: "Financing", id: "financing" },
-  { label: "Final invoice", id: "invoice-flow" },
-  { label: "Service area", id: "service-area" },
-  { label: "Reviews", id: "reviews" },
-  { label: "Contact", id: "contact" },
+const NAV_LINKS: Array<{ label: string; route: AppRoute }> = [
+  { label: "Services", route: "/services" },
+  { label: "Pricing", route: "/pricing" },
+  { label: "Financing", route: "/financing" },
+  { label: "Final invoice", route: "/invoice" },
+  { label: "Service area", route: "/service-area" },
+  { label: "Reviews", route: "/reviews" },
+  { label: "Contact", route: "/estimate" },
 ];
 
-export function Navbar({ onOpenCheckout, onNavigateSection, hasSavedCard }: NavbarProps) {
+export function Navbar({
+  currentRoute,
+  onOpenCheckout,
+  onNavigateRoute,
+  hasSavedCard,
+}: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const inspectionPlan = getPlanByKey("inspection");
 
-  function handleNav(id: string) {
+  function handleNav(e: React.MouseEvent, route: AppRoute) {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
     setMobileOpen(false);
-    onNavigateSection(id);
+    onNavigateRoute(route);
   }
 
   return (
     <header className="sticky top-0 z-40 w-full bg-[#f7f4ee]/95 backdrop-blur-sm border-b border-[var(--border-hairline)]">
       <div className="mx-auto flex h-16 max-w-[1360px] items-center justify-between px-6 lg:px-8">
         {/* Flat solid glyph + calm wordmark */}
-        <button
-          type="button"
-          onClick={() => handleNav("top")}
+        <a
+          href="/"
+          onClick={(e) => handleNav(e, "/")}
           className="inline-flex items-center gap-2 text-left cursor-pointer"
         >
           <svg
@@ -62,26 +71,34 @@ export function Navbar({ onOpenCheckout, onNavigateSection, hasSavedCard }: Navb
           <span className="text-[17px] leading-none font-semibold text-[var(--text-primary)]">
             {COMPANY_CONFIG.brand.shortName}
           </span>
-        </button>
+        </a>
 
         {/* Primary navigation */}
         <nav className="hidden lg:flex items-center gap-6" aria-label="Primary">
-          {NAV_LINKS.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => handleNav(item.id)}
-              className="inline-flex items-center gap-2 text-[14px] leading-5 font-normal text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors duration-150 ease-[var(--ease-out)] cursor-pointer"
-            >
-              <span>{item.label}</span>
-              {item.id === "invoice-flow" && hasSavedCard && (
-                <span
-                  className="h-1.5 w-1.5 rounded-full bg-[var(--status-positive)]"
-                  title="Card saved on file"
-                />
-              )}
-            </button>
-          ))}
+          {NAV_LINKS.map((item) => {
+            const isActive = currentRoute === item.route;
+            return (
+              <a
+                key={item.route}
+                href={item.route}
+                aria-current={isActive ? "page" : undefined}
+                onClick={(e) => handleNav(e, item.route)}
+                className={`inline-flex items-center gap-2 text-[14px] leading-5 transition-colors duration-150 ease-[var(--ease-out)] cursor-pointer ${
+                  isActive
+                    ? "font-medium text-[var(--brand-primary)]"
+                    : "font-normal text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                }`}
+              >
+                <span>{item.label}</span>
+                {item.route === "/invoice" && hasSavedCard && (
+                  <span
+                    className="h-1.5 w-1.5 rounded-full bg-[var(--status-positive)]"
+                    title="Card saved on file"
+                  />
+                )}
+              </a>
+            );
+          })}
         </nav>
 
         {/* Quiet text action + single primary button */}
@@ -93,13 +110,13 @@ export function Navbar({ onOpenCheckout, onNavigateSection, hasSavedCard }: Navb
           >
             Inspection · <span className="font-mono">{formatUsd(inspectionPlan.price)}</span>
           </button>
-          <button
-            type="button"
-            onClick={() => handleNav("estimate")}
+          <a
+            href="/estimate"
+            onClick={(e) => handleNav(e, "/estimate")}
             className="inline-flex h-9 items-center justify-center rounded-[8px] bg-[var(--text-primary)] px-4 text-[14px] leading-5 font-medium text-[#fdfbf7] hover:bg-[#332d25] active:scale-[0.98] ui-transition cursor-pointer"
           >
             Request estimate
-          </button>
+          </a>
         </div>
 
         {/* Mobile menu button */}
@@ -118,31 +135,51 @@ export function Navbar({ onOpenCheckout, onNavigateSection, hasSavedCard }: Navb
       {mobileOpen && (
         <div className="sm:hidden border-t border-[var(--border-hairline)] bg-[var(--surface-page)] px-6 py-4 space-y-4">
           <nav className="flex flex-col gap-1" aria-label="Mobile">
-            {NAV_LINKS.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => handleNav(item.id)}
-                className="flex h-9 items-center justify-between rounded-[8px] px-2 text-left text-[15px] font-normal text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-colors duration-150"
-              >
-                <span>{item.label}</span>
-                {item.id === "invoice-flow" && hasSavedCard && (
-                  <span className="font-mono text-[12px] text-[var(--status-positive)]">
-                    Card on file
-                  </span>
-                )}
-              </button>
-            ))}
+            <a
+              href="/"
+              aria-current={currentRoute === "/" ? "page" : undefined}
+              onClick={(e) => handleNav(e, "/")}
+              className={`flex h-9 items-center justify-between rounded-[8px] px-2 text-left text-[15px] transition-colors duration-150 ${
+                currentRoute === "/"
+                  ? "bg-[var(--surface-raised)] font-medium text-[var(--brand-primary)]"
+                  : "font-normal text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
+              }`}
+            >
+              <span>Home</span>
+            </a>
+            {NAV_LINKS.map((item) => {
+              const isActive = currentRoute === item.route;
+              return (
+                <a
+                  key={item.route}
+                  href={item.route}
+                  aria-current={isActive ? "page" : undefined}
+                  onClick={(e) => handleNav(e, item.route)}
+                  className={`flex h-9 items-center justify-between rounded-[8px] px-2 text-left text-[15px] transition-colors duration-150 ${
+                    isActive
+                      ? "bg-[var(--surface-raised)] font-medium text-[var(--brand-primary)]"
+                      : "font-normal text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
+                  }`}
+                >
+                  <span>{item.label}</span>
+                  {item.route === "/invoice" && hasSavedCard && (
+                    <span className="font-mono text-[12px] text-[var(--status-positive)]">
+                      Card on file
+                    </span>
+                  )}
+                </a>
+              );
+            })}
           </nav>
 
           <div className="flex flex-col gap-2 pt-3 border-t border-[var(--border-hairline)]">
-            <button
-              type="button"
-              onClick={() => handleNav("estimate")}
+            <a
+              href="/estimate"
+              onClick={(e) => handleNav(e, "/estimate")}
               className="inline-flex h-11 w-full items-center justify-center rounded-[8px] bg-[var(--text-primary)] px-4 text-[14px] font-medium text-[#fdfbf7]"
             >
               Request estimate
-            </button>
+            </a>
             <button
               type="button"
               onClick={() => {

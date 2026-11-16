@@ -1,11 +1,12 @@
 import { COMPANY_CONFIG, formatUsd, getPlanByKey, type PlanKey } from "../config/company.config";
+import type { AppRoute } from "../lib/routes";
 
 interface HeroSectionProps {
   onOpenCheckout: (planKey: PlanKey) => void;
-  onNavigateSection: (sectionId: string) => void;
+  onNavigateRoute: (route: AppRoute) => void;
 }
 
-export function HeroSection({ onOpenCheckout, onNavigateSection }: HeroSectionProps) {
+export function HeroSection({ onOpenCheckout, onNavigateRoute }: HeroSectionProps) {
   const depositPlan = getPlanByKey("deposit");
 
   return (
@@ -49,13 +50,17 @@ export function HeroSection({ onOpenCheckout, onNavigateSection }: HeroSectionPr
 
             {/* One primary action + one secondary action, nothing stacked beneath */}
             <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-3">
-              <button
-                type="button"
-                onClick={() => onNavigateSection("estimate")}
+              <a
+                href="/estimate"
+                onClick={(e) => {
+                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+                  e.preventDefault();
+                  onNavigateRoute("/estimate");
+                }}
                 className="inline-flex h-12 items-center justify-center rounded-[8px] bg-[var(--dark-primary)] px-5 text-[15px] font-medium text-[var(--dark-page)] hover:bg-white active:scale-[0.98] btn-dark-surface ui-transition cursor-pointer"
               >
                 Request an estimate
-              </button>
+              </a>
               <button
                 type="button"
                 onClick={() => onOpenCheckout("deposit")}

@@ -4,9 +4,11 @@ import { EstimateContactSection } from "./components/EstimateContactSection";
 import { FinancingSection } from "./components/FinancingSection";
 import { Footer } from "./components/Footer";
 import { HeroSection } from "./components/HeroSection";
+import { HomeOverviewSection } from "./components/HomeOverviewSection";
 import { InvoiceWorkflowSection } from "./components/InvoiceWorkflowSection";
 import { LegalModal, type LegalTab } from "./components/LegalModal";
 import { Navbar } from "./components/Navbar";
+import { PageHeaderBar } from "./components/PageHeaderBar";
 import { PlansSection } from "./components/PlansSection";
 import { ReviewsTrustSection } from "./components/ReviewsTrustSection";
 import { ServiceAreaSection } from "./components/ServiceAreaSection";
@@ -20,6 +22,7 @@ import {
   type PlanKey,
   type ServiceKey,
 } from "./config/company.config";
+import { getRouteMeta, normalizeRoute, type AppRoute } from "./lib/routes";
 import {
   clearTrackedEvents,
   ensureDevPixelShim,
@@ -52,11 +55,22 @@ const DEFAULT_RUNTIME: RuntimeConfigResponse = {
   invoiceAuthRequired: false,
 };
 
+function resolveInitialRoute(): AppRoute {
+  if (typeof window === "undefined") return "/";
+  const { pathname, hash } = window.location;
+  if (pathname.startsWith("/checkout/") && pathname !== "/checkout/return") {
+    return "/";
+  }
+  return normalizeRoute(pathname, hash);
+}
+
 export function App() {
   const [runtime, setRuntime] = useState<RuntimeConfigResponse>(DEFAULT_RUNTIME);
-  const [pathname, setPathname] = useState<string>(() =>
-    typeof window !== "undefined" ? window.location.pathname : "/",
-  );
+  const [activeRoute, setActiveRoute] = useState<AppRoute>(resolveInitialRoute);
+  const [lastPageRoute, setLastPageRoute] = useState<AppRoute>(() => {
+    const initial = resolveInitialRoute();
+    return initial === "/checkout/return" ? "/" : initial;
+  });
   const [checkoutState, setCheckoutState] = useState<{
     planKey: PlanKey;
     orderId: string;
@@ -81,9 +95,19 @@ export function App() {
       "--brand-primary-hover",
       COMPANY_CONFIG.brand.accentHoverHex,
     );
-    document.title = `${COMPANY_CONFIG.brand.name} — Roof Replacement, Repair & Inspection`;
     ensureDevPixelShim();
   }, []);
+
+  useEffect(() => {
+    if (activeRoute === "/") {
+      document.title = `${COMPANY_CONFIG.brand.name} — Roof Replacement, Repair & Inspection`;
+    } else if (activeRoute === "/checkout/return") {
+      document.title = `Payment Status — ${COMPANY_CONFIG.brand.name}`;
+    } else {
+      const meta = getRouteMeta(activeRoute);
+      document.title = `${meta.title} — ${COMPANY_CONFIG.brand.name}`;
+    }
+  }, [activeRoute]);
 
   useEffect(() => {
     function handleEvent() {
@@ -105,7 +129,7 @@ export function App() {
   useEffect(() => {
     function syncFromLocation() {
       const currentPath = window.location.pathname;
-      setPathname(currentPath);
+      const currentHash = window.location.hash;
 
       if (currentPath.startsWith("/checkout/") && currentPath !== "/checkout/return") {
         const slug = currentPath.replace("/checkout/", "").split("/")[0];
@@ -113,7 +137,19 @@ export function App() {
         if (plan) {
           const orderId = generateEventId("ord");
           setCheckoutState({ planKey: plan.key, orderId });
+          return;
         }
+      }
+
+      const normalized = normalizeRoute(currentPath, currentHash);
+      setCheckoutState(null);
+      setActiveRoute(normalized);
+      if (normalized !== "/checkout/return") {
+        setLastPageRoute(normalized);
+      }
+
+      if (currentHash && normalized !== "/" && currentPath === "/") {
+        window.history.replaceState({}, "", normalized);
       }
     }
 
@@ -122,6 +158,24 @@ export function App() {
     return () => window.removeEventListener("popstate", syncFromLocation);
   }, []);
 
+  const navigateRoute = useCallback(
+    (route: AppRoute) => {
+      setCheckoutState(null);
+      setActiveRoute(route);
+      if (route !== "/checkout/return") {
+        setLastPageRoute(route);
+      }
+
+      if (typeof window !== "undefined") {
+        if (window.location.pathname !== route || window.location.hash) {
+          window.history.pushState({}, "", route);
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    },
+    [],
+  );
+
   const openCheckout = useCallback(
     (planKey: PlanKey) => {
       const plan = getPlanByKey(planKey);
@@ -129,8 +183,10 @@ export function App() {
       setCheckoutState({ planKey, orderId });
 
       if (typeof window !== "undefined") {
+        if (!window.location.pathname.startsWith("/checkout/")) {
+          setLastPageRoute(normalizeRoute(window.location.pathname, window.location.hash));
+        }
         window.history.pushState({}, "", `/checkout/${plan.slug}`);
-        setPathname(`/checkout/${plan.slug}`);
       }
 
       trackCheckoutOrDepositStarted({
@@ -148,44 +204,27 @@ export function App() {
 
   const closeCheckout = useCallback(() => {
     setCheckoutState(null);
+    const targetRoute = lastPageRoute === "/checkout/return" ? "/" : lastPageRoute;
+    setActiveRoute(targetRoute);
     if (typeof window !== "undefined" && window.location.pathname.startsWith("/checkout")) {
-      window.history.pushState({}, "", "/");
-      setPathname("/");
+      window.history.pushState({}, "", targetRoute);
     }
-  }, []);
-
-  const navigateSection = useCallback((sectionId: string) => {
-    setCheckoutState(null);
-    if (typeof window !== "undefined" && window.location.pathname !== "/") {
-      window.history.pushState({}, "", "/");
-      setPathname("/");
-    }
-    requestAnimationFrame(() => {
-      if (sectionId === "top") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        return;
-      }
-      const el = document.getElementById(sectionId);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    });
-  }, []);
+  }, [lastPageRoute]);
 
   const handleRequestEstimateForService = useCallback(
     (serviceKey: ServiceKey) => {
       setPrefilledService(serviceKey);
-      navigateSection("estimate");
+      navigateRoute("/estimate");
     },
-    [navigateSection],
+    [navigateRoute],
   );
 
   const handlePrefillEstimateZip = useCallback(
     (zip: string) => {
       setPrefilledZip(zip);
-      navigateSection("estimate");
+      navigateRoute("/estimate");
     },
-    [navigateSection],
+    [navigateRoute],
   );
 
   const handleSavedCard = useCallback((card: SavedCardSummary) => {
@@ -193,67 +232,97 @@ export function App() {
     if (card.memberId) setLatestMemberId(card.memberId);
   }, []);
 
-  const isReturnPage = pathname === "/checkout/return";
+  const isReturnPage = activeRoute === "/checkout/return";
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--surface-page)] text-[var(--text-primary)]">
       <Navbar
+        currentRoute={activeRoute}
         onOpenCheckout={openCheckout}
-        onNavigateSection={navigateSection}
+        onNavigateRoute={navigateRoute}
         hasSavedCard={Boolean(savedCard)}
       />
 
       {isReturnPage ? (
         <CheckoutReturnView
-          onBackToSite={() => navigateSection("top")}
-          onJumpToInvoice={() => navigateSection("invoice-flow")}
+          onBackToSite={() => navigateRoute("/")}
+          onJumpToInvoice={() => navigateRoute("/invoice")}
           onSavedCard={handleSavedCard}
         />
       ) : (
         <main className="flex-1">
-          <HeroSection onOpenCheckout={openCheckout} onNavigateSection={navigateSection} />
+          {activeRoute === "/" && (
+            <>
+              <HeroSection onOpenCheckout={openCheckout} onNavigateRoute={navigateRoute} />
+              <HomeOverviewSection
+                runtime={runtime}
+                onNavigateRoute={navigateRoute}
+                onOpenCheckout={openCheckout}
+              />
+            </>
+          )}
 
-          <ServicesSection
-            runtime={runtime}
-            onOpenCheckout={openCheckout}
-            onRequestEstimateForService={handleRequestEstimateForService}
-          />
+          {activeRoute !== "/" && (
+            <PageHeaderBar
+              route={activeRoute}
+              onNavigateRoute={navigateRoute}
+              onOpenCheckout={openCheckout}
+            />
+          )}
 
-          <PlansSection runtime={runtime} onOpenCheckout={openCheckout} />
+          {activeRoute === "/services" && (
+            <ServicesSection
+              runtime={runtime}
+              onOpenCheckout={openCheckout}
+              onRequestEstimateForService={handleRequestEstimateForService}
+            />
+          )}
 
-          <FinancingSection onOpenCheckout={openCheckout} onNavigateSection={navigateSection} />
+          {activeRoute === "/pricing" && (
+            <PlansSection runtime={runtime} onOpenCheckout={openCheckout} />
+          )}
 
-          <InvoiceWorkflowSection
-            runtime={runtime}
-            savedCard={savedCard}
-            latestMemberId={latestMemberId}
-            onOpenCheckout={openCheckout}
-            onInvoiceCreated={(inv) => setInvoices((prev) => [inv, ...prev])}
-          />
+          {activeRoute === "/financing" && (
+            <FinancingSection onOpenCheckout={openCheckout} onNavigateRoute={navigateRoute} />
+          )}
 
-          <ServiceAreaSection
-            onOpenCheckout={openCheckout}
-            onPrefillEstimateZip={handlePrefillEstimateZip}
-          />
+          {activeRoute === "/invoice" && (
+            <InvoiceWorkflowSection
+              runtime={runtime}
+              savedCard={savedCard}
+              latestMemberId={latestMemberId}
+              onOpenCheckout={openCheckout}
+              onInvoiceCreated={(inv) => setInvoices((prev) => [inv, ...prev])}
+            />
+          )}
 
-          <ReviewsTrustSection />
+          {activeRoute === "/service-area" && (
+            <ServiceAreaSection
+              onOpenCheckout={openCheckout}
+              onPrefillEstimateZip={handlePrefillEstimateZip}
+            />
+          )}
 
-          <EstimateContactSection
-            runtime={runtime}
-            prefilledService={prefilledService}
-            prefilledZip={prefilledZip}
-            onOpenCheckout={openCheckout}
-            onLeadCreated={(lead) => {
-              setLeads((prev) => [lead, ...prev]);
-              if (lead.memberId) setLatestMemberId(lead.memberId);
-            }}
-          />
+          {activeRoute === "/reviews" && <ReviewsTrustSection />}
+
+          {activeRoute === "/estimate" && (
+            <EstimateContactSection
+              runtime={runtime}
+              prefilledService={prefilledService}
+              prefilledZip={prefilledZip}
+              onOpenCheckout={openCheckout}
+              onLeadCreated={(lead) => {
+                setLeads((prev) => [lead, ...prev]);
+                if (lead.memberId) setLatestMemberId(lead.memberId);
+              }}
+            />
+          )}
         </main>
       )}
 
       <Footer
         onOpenCheckout={openCheckout}
-        onNavigateSection={navigateSection}
+        onNavigateRoute={navigateRoute}
         onOpenLegal={(tab) => setLegalTab(tab)}
         onToggleInspector={() => setInspectorOpen((v) => !v)}
         pixelEventCount={pixelEvents.length}
@@ -278,7 +347,7 @@ export function App() {
             if (res.savedCard) setSavedCard(res.savedCard);
             if (res.memberId) setLatestMemberId(res.memberId);
           }}
-          onJumpToInvoice={() => navigateSection("invoice-flow")}
+          onJumpToInvoice={() => navigateRoute("/invoice")}
         />
       )}
 
