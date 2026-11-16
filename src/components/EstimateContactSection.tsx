@@ -120,7 +120,7 @@ export function EstimateContactSection({
           {/* Left: Estimate form -> Whop Leads API */}
           <div className="lg:col-span-7">
             <p className="font-mono text-[12px] leading-4 text-[var(--text-muted)]">
-              07 · Request an estimate
+              Request an estimate
             </p>
             <h2 className="mt-3 font-display text-[36px] sm:text-[44px] leading-[1.08] text-[var(--text-primary)]">
               Request a written roof scope and line-item price

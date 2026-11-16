@@ -126,7 +126,7 @@ export function Footer({
 
           <div className="lg:col-span-2 space-y-3">
             <h3 className="text-[13px] leading-5 font-medium text-[var(--dark-primary)]">
-              Austin yard
+              {COMPANY_CONFIG.contact.city} yard
             </h3>
             <div className="space-y-2 text-[13px] leading-5 text-[var(--dark-muted)]">
               <p className="font-mono text-[var(--dark-secondary)] tabular-nums">

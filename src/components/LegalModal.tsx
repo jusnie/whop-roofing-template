@@ -44,7 +44,7 @@ export function LegalModal({ activeTab, onSelectTab, onClose }: LegalModalProps)
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-[720px] max-h-[88vh] flex flex-col rounded-[16px] border border-[var(--border-hairline)] bg-[var(--surface-card)] shadow-float overflow-hidden">
+      <div className="modal-enter relative w-full max-w-[720px] max-h-[88vh] flex flex-col rounded-[16px] border border-[var(--border-hairline)] bg-[var(--surface-card)] shadow-float overflow-hidden">
         <div className="flex items-start justify-between gap-4 border-b border-[var(--border-hairline)] px-6 py-5 sm:px-8">
           <div>
             <p className="font-mono text-[12px] leading-4 text-[var(--text-muted)]">

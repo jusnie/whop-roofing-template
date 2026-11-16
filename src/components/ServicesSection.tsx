@@ -49,7 +49,7 @@ export function ServicesSection({
         {/* Section header */}
         <div className="max-w-[640px]">
           <p className="font-mono text-[12px] leading-4 text-[var(--text-muted)]">
-            01 · Residential and light commercial scope
+            Residential and light commercial scope
           </p>
           <h2 className="mt-3 font-display text-[36px] sm:text-[44px] leading-[1.08] text-[var(--text-primary)]">
             Inspections, storm repairs, and full roof replacements

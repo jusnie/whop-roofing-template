@@ -12,7 +12,7 @@ export function ReviewsTrustSection() {
       <div className="mx-auto max-w-[1360px] px-6 lg:px-8">
         <div className="max-w-[620px]">
           <p className="font-mono text-[12px] leading-4 text-[var(--text-muted)]">
-            06 · Credentials and recent roofs
+            Credentials and recent roofs
           </p>
           <h2 className="mt-3 font-display text-[36px] sm:text-[44px] leading-[1.08] text-[var(--text-primary)]">
             Manufacturer certifications and homeowner feedback

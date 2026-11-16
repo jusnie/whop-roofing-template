@@ -45,7 +45,7 @@ export function ServiceAreaSection({
           <div className="lg:col-span-5 space-y-6">
             <div>
               <p className="font-mono text-[12px] leading-4 text-[var(--text-muted)] tabular-nums">
-                05 · Service area · {serviceArea.radiusMiles}-mile radius
+                Service area · {serviceArea.radiusMiles}-mile radius
               </p>
               <h2 className="mt-3 font-display text-[36px] sm:text-[44px] leading-[1.08] text-[var(--text-primary)]">
                 {serviceArea.headline}
@@ -137,7 +137,7 @@ export function ServiceAreaSection({
                 viewBox="0 0 360 200"
                 className="w-full h-auto font-sans"
                 role="img"
-                aria-label="65-mile dispatch radius centered on Austin, Texas"
+                aria-label={`${serviceArea.radiusMiles}-mile dispatch radius centered on ${serviceArea.headquartersCity}, ${COMPANY_CONFIG.contact.state}`}
               >
                 <circle
                   cx="180"
@@ -174,10 +174,10 @@ export function ServiceAreaSection({
 
                 <circle cx="180" cy="104" r="4.5" fill="#b8431b" />
                 <text x="190" y="101" fill="#1f1b16" fontSize="11" fontWeight="500">
-                  Austin yard
+                  {serviceArea.headquartersCity} yard
                 </text>
                 <text x="270" y="188" fill="#72695e" fontSize="10" style={{ fontFamily: "var(--font-mono)" }}>
-                  65 mi
+                  {serviceArea.radiusMiles} mi
                 </text>
               </svg>
             </div>
