@@ -1,0 +1,44 @@
+{
+  "name": "ridgeline-roofing-whop-template",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Production-ready US roofing company website template built for Whop Websites — complete Deposit + SetupIntent Card-on-File → Job → Final Balance Invoice flow, Whop Payment Elements, Leads API, and custom pixel tracking.",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4173",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/verify-template.mjs",
+    "deploy": "whop apps deploy",
+    "deploy:preview": "whop apps deploy --preview",
+    "whop:dev": "whop apps dev",
+    "whop:provision": "node scripts/provision-plans.mjs",
+    "whop:ship": "bash scripts/deploy.sh"
+  },
+  "dependencies": {
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.2.0",
+    "@fontsource/instrument-serif": "^5.3.0",
+    "@whop/elements": "^1.10.0",
+    "@whop/elements-react": "^1.10.0",
+    "@whop/sdk": "^2.8.1",
+    "lucide-react": "^0.511.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.13.0",
+    "@cloudflare/workers-types": "^5.20261113.1",
+    "@tailwindcss/vite": "^4.1.11",
+    "@types/node": "^22.15.30",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^5.0.0",
+    "@whop/cli": "^1.0.0",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.8.3",
+    "vite": "^7.1.0",
+    "wrangler": "^4.42.0"
+  }
+}
