@@ -1,9 +1,10 @@
 import { COMPANY_CONFIG, formatUsd, type PlanKey } from "../config/company.config";
+import type { AppRoute } from "../lib/routes";
 import type { LegalTab } from "./LegalModal";
 
 interface FooterProps {
   onOpenCheckout: (planKey: PlanKey) => void;
-  onNavigateSection: (sectionId: string) => void;
+  onNavigateRoute: (route: AppRoute) => void;
   onOpenLegal: (tab: LegalTab) => void;
   onToggleInspector: () => void;
   pixelEventCount: number;
@@ -11,19 +12,29 @@ interface FooterProps {
 
 export function Footer({
   onOpenCheckout,
-  onNavigateSection,
+  onNavigateRoute,
   onOpenLegal,
   onToggleInspector,
   pixelEventCount,
 }: FooterProps) {
   const year = new Date().getFullYear();
 
+  function handleNav(e: React.MouseEvent, route: AppRoute) {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    onNavigateRoute(route);
+  }
+
   return (
     <footer className="bg-[var(--dark-deep)] text-[var(--dark-secondary)] border-t border-[var(--dark-hairline)]">
       <div className="mx-auto max-w-[1360px] px-6 py-16 lg:px-8">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-12">
           <div className="lg:col-span-5 space-y-4">
-            <div className="inline-flex items-center gap-2">
+            <a
+              href="/"
+              onClick={(e) => handleNav(e, "/")}
+              className="inline-flex items-center gap-2"
+            >
               <svg
                 viewBox="0 0 24 24"
                 width="20"
@@ -50,7 +61,7 @@ export function Footer({
               <span className="text-[17px] leading-none font-semibold text-[var(--dark-primary)]">
                 {COMPANY_CONFIG.brand.name}
               </span>
-            </div>
+            </a>
 
             <p className="max-w-[380px] text-[14px] leading-[22px] text-[var(--dark-muted)]">
               Serving {COMPANY_CONFIG.serviceArea.regionName} since{" "}
@@ -76,37 +87,38 @@ export function Footer({
                 </li>
               ))}
               <li>
-                <button
-                  type="button"
-                  onClick={() => onNavigateSection("invoice-flow")}
+                <a
+                  href="/invoice"
+                  onClick={(e) => handleNav(e, "/invoice")}
                   className="text-[var(--dark-muted)] hover:text-[var(--dark-primary)] transition-colors cursor-pointer"
                 >
                   Final balance invoice
-                </button>
+                </a>
               </li>
             </ul>
           </div>
 
           <div className="lg:col-span-2 space-y-3">
             <h3 className="text-[13px] leading-5 font-medium text-[var(--dark-primary)]">
-              Company
+              Pages
             </h3>
             <ul className="space-y-2 text-[13px] leading-5">
               {[
-                { label: "Services", id: "services" },
-                { label: "Financing", id: "financing" },
-                { label: "Service area", id: "service-area" },
-                { label: "Credentials", id: "reviews" },
-                { label: "Request estimate", id: "estimate" },
+                { label: "Services", route: "/services" as AppRoute },
+                { label: "Pricing", route: "/pricing" as AppRoute },
+                { label: "Financing", route: "/financing" as AppRoute },
+                { label: "Service area", route: "/service-area" as AppRoute },
+                { label: "Credentials", route: "/reviews" as AppRoute },
+                { label: "Request estimate", route: "/estimate" as AppRoute },
               ].map((link) => (
-                <li key={link.id}>
-                  <button
-                    type="button"
-                    onClick={() => onNavigateSection(link.id)}
+                <li key={link.route}>
+                  <a
+                    href={link.route}
+                    onClick={(e) => handleNav(e, link.route)}
                     className="text-[var(--dark-muted)] hover:text-[var(--dark-primary)] transition-colors cursor-pointer"
                   >
                     {link.label}
-                  </button>
+                  </a>
                 </li>
               ))}
             </ul>

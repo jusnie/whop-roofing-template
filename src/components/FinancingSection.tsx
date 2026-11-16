@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { COMPANY_CONFIG, formatUsd, getPlanByKey, type PlanKey } from "../config/company.config";
 import { trackWhopEvent } from "../lib/whop-pixel";
+import type { AppRoute } from "../lib/routes";
 
 interface FinancingSectionProps {
   onOpenCheckout: (planKey: PlanKey) => void;
-  onNavigateSection: (sectionId: string) => void;
+  onNavigateRoute: (route: AppRoute) => void;
 }
 
-export function FinancingSection({ onOpenCheckout, onNavigateSection }: FinancingSectionProps) {
+export function FinancingSection({ onOpenCheckout, onNavigateRoute }: FinancingSectionProps) {
   const { financing } = COMPANY_CONFIG;
   const depositPlan = getPlanByKey("deposit");
   const inspectionPlan = getPlanByKey("inspection");
@@ -73,7 +74,7 @@ export function FinancingSection({ onOpenCheckout, onNavigateSection }: Financin
                 type="button"
                 onClick={() => {
                   handleCommitEstimate();
-                  onNavigateSection("estimate");
+                  onNavigateRoute("/estimate");
                 }}
                 className="inline-flex h-11 items-center justify-center rounded-[8px] border border-[var(--dark-control)] bg-transparent px-5 text-[14px] font-normal text-[var(--dark-primary)] hover:bg-[var(--dark-raised)] active:scale-[0.98] ui-transition cursor-pointer"
               >
