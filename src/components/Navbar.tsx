@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
 import { COMPANY_CONFIG, formatUsd, getPlanByKey, type PlanKey } from "../config/company.config";
 import type { AppRoute } from "../lib/routes";
 
@@ -118,88 +117,121 @@ export function Navbar({
             Request estimate
           </a>
 
-          {/* Mobile & tablet menu button (shown whenever full lg nav is hidden) */}
+          {/* Mobile & tablet icon-only animated menu button */}
           <button
             type="button"
             onClick={() => setMobileOpen((prev) => !prev)}
-            className="inline-flex lg:hidden h-9 items-center justify-center gap-2 rounded-[8px] border border-[var(--border-control)] bg-[var(--surface-card)] px-2.5 text-[13px] font-medium text-[var(--text-primary)] transition-colors duration-150 ease-[var(--ease-out)] cursor-pointer"
+            className="inline-flex lg:hidden h-9 w-9 items-center justify-center rounded-[8px] border border-[var(--border-control)] bg-[var(--surface-card)] text-[var(--text-primary)] hover:bg-[var(--surface-raised)] active:scale-[0.94] ui-transition cursor-pointer"
             aria-expanded={mobileOpen}
             aria-label="Toggle menu"
           >
-            {mobileOpen ? <X size={18} strokeWidth={1.5} /> : <Menu size={18} strokeWidth={1.5} />}
-            <span className="hidden sm:inline">Menu</span>
+            <span className="relative h-4 w-4" aria-hidden="true">
+              <span
+                className={`absolute left-0 block h-[1.5px] w-4 rounded-full bg-current transition-all duration-200 ease-[var(--ease-out)] ${
+                  mobileOpen ? "top-[7px] rotate-45" : "top-[2px] rotate-0"
+                }`}
+              />
+              <span
+                className={`absolute left-0 top-[7px] block h-[1.5px] w-4 rounded-full bg-current transition-all duration-150 ease-[var(--ease-out)] ${
+                  mobileOpen ? "opacity-0 scale-x-0" : "opacity-100 scale-x-100"
+                }`}
+              />
+              <span
+                className={`absolute left-0 block h-[1.5px] w-4 rounded-full bg-current transition-all duration-200 ease-[var(--ease-out)] ${
+                  mobileOpen ? "top-[7px] -rotate-45" : "top-[12px] rotate-0"
+                }`}
+              />
+            </span>
           </button>
         </div>
       </div>
 
-      {/* Mobile & tablet navigation sheet */}
-      {mobileOpen && (
-        <div className="lg:hidden border-t border-[var(--border-hairline)] bg-[var(--surface-page)] px-6 py-4 space-y-4">
-          <nav className="flex flex-col gap-1" aria-label="Mobile">
-            <a
-              href="/"
-              aria-current={currentRoute === "/" ? "page" : undefined}
-              onClick={(e) => handleNav(e, "/")}
-              className={`flex h-9 items-center justify-between rounded-[8px] px-2 text-left text-[15px] transition-colors duration-150 ${
-                currentRoute === "/"
-                  ? "bg-[var(--surface-raised)] font-medium text-[var(--brand-primary)]"
-                  : "font-normal text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
-              }`}
-            >
-              <span>Home</span>
-            </a>
-            {NAV_LINKS.map((item) => {
-              const isActive = currentRoute === item.route;
-              return (
-                <a
-                  key={item.route}
-                  href={item.route}
-                  aria-current={isActive ? "page" : undefined}
-                  onClick={(e) => handleNav(e, item.route)}
-                  className={`flex h-9 items-center justify-between rounded-[8px] px-2 text-left text-[15px] transition-colors duration-150 ${
-                    isActive
-                      ? "bg-[var(--surface-raised)] font-medium text-[var(--brand-primary)]"
-                      : "font-normal text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
-                  }`}
-                >
-                  <span>{item.label}</span>
-                  {item.route === "/invoice" && hasSavedCard && (
-                    <span className="font-mono text-[12px] text-[var(--status-positive)]">
-                      Card on file
-                    </span>
-                  )}
-                </a>
-              );
-            })}
-          </nav>
-
-          <div className="flex flex-col gap-2 pt-3 border-t border-[var(--border-hairline)] sm:hidden">
-            <a
-              href="/estimate"
-              onClick={(e) => handleNav(e, "/estimate")}
-              className="inline-flex h-11 w-full items-center justify-center rounded-[8px] bg-[var(--text-primary)] px-4 text-[14px] font-medium text-[#fdfbf7]"
-            >
-              Request estimate
-            </a>
-            <button
-              type="button"
-              onClick={() => {
-                setMobileOpen(false);
-                onOpenCheckout("inspection");
-              }}
-              className="inline-flex h-11 w-full items-center justify-center rounded-[8px] border border-[var(--border-control)] bg-[var(--surface-card)] px-4 text-[14px] font-normal text-[var(--text-primary)] tabular-nums"
-            >
-              Book inspection · {formatUsd(inspectionPlan.price)}
-            </button>
-          </div>
-          <a
-            href={COMPANY_CONFIG.contact.phoneHref}
-            className="flex h-9 items-center justify-center font-mono text-[13px] text-[var(--text-secondary)] tabular-nums sm:pt-2 sm:border-t sm:border-[var(--border-hairline)]"
+      {/* Animated mobile & tablet navigation sheet */}
+      <div
+        aria-hidden={!mobileOpen}
+        className={`lg:hidden grid transition-[grid-template-rows,opacity] duration-200 ease-[var(--ease-out)] ${
+          mobileOpen
+            ? "grid-rows-[1fr] opacity-100"
+            : "grid-rows-[0fr] opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div
+            className={`border-t border-[var(--border-hairline)] bg-[var(--surface-page)] px-6 py-4 space-y-4 transition-transform duration-200 ease-[var(--ease-out)] ${
+              mobileOpen ? "translate-y-0" : "-translate-y-2"
+            }`}
           >
-            {COMPANY_CONFIG.contact.phone} · {COMPANY_CONFIG.contact.licenseNumber}
-          </a>
+            <nav className="flex flex-col gap-1" aria-label="Mobile">
+              <a
+                href="/"
+                tabIndex={mobileOpen ? 0 : -1}
+                aria-current={currentRoute === "/" ? "page" : undefined}
+                onClick={(e) => handleNav(e, "/")}
+                className={`flex h-9 items-center justify-between rounded-[8px] px-2 text-left text-[15px] transition-colors duration-150 ${
+                  currentRoute === "/"
+                    ? "bg-[var(--surface-raised)] font-medium text-[var(--brand-primary)]"
+                    : "font-normal text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
+                }`}
+              >
+                <span>Home</span>
+              </a>
+              {NAV_LINKS.map((item) => {
+                const isActive = currentRoute === item.route;
+                return (
+                  <a
+                    key={item.route}
+                    href={item.route}
+                    tabIndex={mobileOpen ? 0 : -1}
+                    aria-current={isActive ? "page" : undefined}
+                    onClick={(e) => handleNav(e, item.route)}
+                    className={`flex h-9 items-center justify-between rounded-[8px] px-2 text-left text-[15px] transition-colors duration-150 ${
+                      isActive
+                        ? "bg-[var(--surface-raised)] font-medium text-[var(--brand-primary)]"
+                        : "font-normal text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    {item.route === "/invoice" && hasSavedCard && (
+                      <span className="font-mono text-[12px] text-[var(--status-positive)]">
+                        Card on file
+                      </span>
+                    )}
+                  </a>
+                );
+              })}
+            </nav>
+
+            <div className="flex flex-col gap-2 pt-3 border-t border-[var(--border-hairline)] sm:hidden">
+              <a
+                href="/estimate"
+                tabIndex={mobileOpen ? 0 : -1}
+                onClick={(e) => handleNav(e, "/estimate")}
+                className="inline-flex h-11 w-full items-center justify-center rounded-[8px] bg-[var(--text-primary)] px-4 text-[14px] font-medium text-[#fdfbf7]"
+              >
+                Request estimate
+              </a>
+              <button
+                type="button"
+                tabIndex={mobileOpen ? 0 : -1}
+                onClick={() => {
+                  setMobileOpen(false);
+                  onOpenCheckout("inspection");
+                }}
+                className="inline-flex h-11 w-full items-center justify-center rounded-[8px] border border-[var(--border-control)] bg-[var(--surface-card)] px-4 text-[14px] font-normal text-[var(--text-primary)] tabular-nums"
+              >
+                Book inspection · {formatUsd(inspectionPlan.price)}
+              </button>
+            </div>
+            <a
+              href={COMPANY_CONFIG.contact.phoneHref}
+              tabIndex={mobileOpen ? 0 : -1}
+              className="flex h-9 items-center justify-center font-mono text-[13px] text-[var(--text-secondary)] tabular-nums sm:pt-2 sm:border-t sm:border-[var(--border-hairline)]"
+            >
+              {COMPANY_CONFIG.contact.phone} · {COMPANY_CONFIG.contact.licenseNumber}
+            </a>
+          </div>
         </div>
-      )}
+      </div>
     </header>
   );
 }
